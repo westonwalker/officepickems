@@ -5,18 +5,14 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Group extends Model
+class Company extends Model
 {
     use HasFactory;
 
     protected $guarded = [];
-
-    public function owner() {
-        return $this->belongsTo(User::class, 'owner_id');
-    }
     
     public function subscription_plan() {
-        return $this->belongsTo(SubscriptionPlan::class);
+        return $this->hasOne(SubscriptionPlan::class);
     }
     
     public function users() {

@@ -11,8 +11,12 @@ class LeagueType extends Model
     
     protected $guarded = [];
     
-    public function league_modes() {
-        return $this->hasMany(LeagueMode::class);
+    // public function league_modes() {
+    //     return $this->hasMany(LeagueMode::class);
+    // }
+
+    public function leagues() {
+        return $this->hasMany(League::class);
     }
 
     public function teams() {

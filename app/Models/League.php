@@ -11,16 +11,16 @@ class League extends Model
 
     protected $guarded = [];
     
-    public function league_mode() {
-        return $this->belongsTo(LeagueMode::class);
+    // public function league_mode() {
+    //     return $this->belongsTo(LeagueMode::class);
+    // }
+    
+    public function league_type() {
+        return $this->belongsTo(LeagueType::class);
     }
     
-    public function season() {
-        return $this->belongsTo(Season::class);
-    }
-    
-    public function group() {
-        return $this->belongsTo(Group::class);
+    public function company() {
+        return $this->belongsTo(Company::class);
     }
     
     public function users() {

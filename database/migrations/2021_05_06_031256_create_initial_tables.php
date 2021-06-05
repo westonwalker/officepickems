@@ -76,48 +76,34 @@ class CreateInitialTables extends Migration
                 'is_active' => true
             )
         );
-        Schema::create('groups', function (Blueprint $table) {
+        Schema::create('companies', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('owner_id');
-            $table->unsignedBigInteger('subscription_plan_id');
+            $table->unsignedBigInteger('subscription_plan_id')->nullable();
+            $table->string('company_name');
             $table->string('slug');
-            $table->string('stripe_key');
-            $table->date('free_trial_end_date');
-            $table->boolean('is_free_trial');
-            $table->boolean('is_subscription_setup');
+            $table->string('stripe_key')->nullable();
+            $table->date('free_trial_end_date')->nullable();
+            $table->boolean('is_free_trial')->default(true);
+            $table->boolean('is_subscription_setup')->default(false);
             $table->boolean('is_active')->default(true);
             $table->timestamps();
-
-            $table->foreign('owner_id')
-                ->references('id')
-                ->on('users')
-                ->onDelete('cascade');
 
             $table->foreign('subscription_plan_id')
                 ->references('id')
                 ->on('subscription_plans')
                 ->onDelete('cascade');
         });
-        Schema::create('groups_users', function (Blueprint $table) {
-            $table->id();
-            $table->unsignedBigInteger('group_id');
-            $table->unsignedBigInteger('user_id');
-            $table->boolean('is_active');
-            $table->timestamps();
+        Schema::table('users', function (Blueprint $table) {
+            $table->after('password', function ($table) {
+                $table->unsignedBigInteger('company_id');
+                $table->boolean('is_owner')->default(false);
+            });
 
-            $table->unique(['group_id', 'user_id']);
-            
-            $table->foreign('group_id')
+            $table->foreign('company_id')
                 ->references('id')
-                ->on('groups')
-                ->onDelete('cascade');
-            
-            $table->foreign('user_id')
-                ->references('id')
-                ->on('users')
+                ->on('companies')
                 ->onDelete('cascade');
         });
-
         Schema::create('league_types', function (Blueprint $table) {
             $table->id();
             $table->string('name');
@@ -142,68 +128,37 @@ class CreateInitialTables extends Migration
                 'is_active' => true
             )
         );
-        Schema::create('league_modes', function (Blueprint $table) {
-            $table->id();
-            $table->unsignedBigInteger('league_type_id');
-            $table->string('name');
-            $table->string('interval');
-            $table->string('scoring');
-            $table->boolean('is_active')->default(true);
-            $table->timestamps();
-
-            $table->foreign('league_type_id')
-                ->references('id')
-                ->on('league_types')
-                ->onDelete('cascade');
-        });
-        Schema::create('seasons', function (Blueprint $table) {
-            $table->id();
-            $table->unsignedBigInteger('league_type_id');
-            $table->integer('number_of_weeks');
-            $table->integer('current_week')->default(1);
-            $table->boolean('is_active')->default(true);
-            $table->boolean('is_completed')->default(false);
-            $table->integer('year');
-            $table->date('start_date');
-            $table->date('end_date');
-            $table->boolean('is_post_season')->default(false);
-            $table->timestamps();
-            
-            $table->foreign('league_type_id')
-                ->references('id')
-                ->on('league_types')
-                ->onDelete('cascade');
-        });
         Schema::create('leagues', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->unsignedBigInteger('group_id');
-            $table->unsignedBigInteger('league_mode_id');
-            $table->unsignedBigInteger('season_id');
+            $table->unsignedBigInteger('company_id');
+            $table->unsignedBigInteger('league_type_id');
+            $table->date('start_date');
+            $table->date('end_date');
+            $table->integer('number_of_weeks');
+            $table->integer('current_week')->default(1);
+            $table->integer('year');
+            $table->boolean('is_active')->default(true);
+            $table->boolean('is_completed')->default(false);
             $table->timestamps();
 
-            $table->foreign('league_mode_id')
+            $table->foreign('company_id')
                 ->references('id')
-                ->on('league_modes')
-                ->onDelete('cascade');
-
-            $table->foreign('group_id')
-                ->references('id')
-                ->on('groups')
+                ->on('companies')
                 ->onDelete('cascade');
             
-            $table->foreign('season_id')
+            $table->foreign('league_type_id')
                 ->references('id')
-                ->on('seasons')
+                ->on('league_types')
                 ->onDelete('cascade');
         });
-        Schema::create('leagues_users', function (Blueprint $table) {
+        Schema::create('league_user', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('league_id');
             $table->unsignedBigInteger('user_id');
-            $table->integer('score');
+            $table->integer('score')->default(0);
             $table->boolean('is_active')->default(true);
-            $table->integer('final_place');
+            $table->integer('final_place')->default(0);
             $table->timestamps();
 
             $table->unique(['league_id', 'user_id']);
@@ -222,6 +177,8 @@ class CreateInitialTables extends Migration
             $table->id();
             $table->unsignedBigInteger('league_id');
             $table->integer('round');
+            $table->date('start_date');
+            $table->date('end_date');
             $table->timestamps();
             
             $table->foreign('league_id')
@@ -248,7 +205,6 @@ class CreateInitialTables extends Migration
             $table->unsignedBigInteger('home_team_id');
             $table->unsignedBigInteger('away_team_id');
             $table->unsignedBigInteger('winner_id')->nullable();
-            $table->unsignedBigInteger('season_id');
             $table->integer('home_team_score');
             $table->integer('away_team_score');
             $table->boolean('is_over')->default(false);
@@ -273,11 +229,6 @@ class CreateInitialTables extends Migration
             $table->foreign('winner_id')
                 ->references('id')
                 ->on('teams')
-                ->onDelete('cascade');
-            
-            $table->foreign('season_id')
-                ->references('id')
-                ->on('seasons')
                 ->onDelete('cascade');
         });
         Schema::create('quiz_questions', function (Blueprint $table) {

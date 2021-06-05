@@ -21,6 +21,8 @@ class User extends Authenticatable
         'email',
         'company_name',
         'password',
+        'company_id',
+        'is_owner',
     ];
 
     /**
@@ -43,15 +45,11 @@ class User extends Authenticatable
     ];
 
     public function last_league() {
-        return $this->hasOne(League::class, 'last_league_id');
-    }
-
-    public function owners() {
-        return $this->hasMany(Group::class, 'owner_id');
+        return $this->belongsTo(League::class, 'last_league_id');
     }
     
-    public function groups() {
-        return $this->belongsToMany(Group::class);
+    public function company() {
+        return $this->belongsTo(Company::class);
     }
     
     public function leagues() {

@@ -15,10 +15,6 @@ class Game extends Model
         return $this->belongsTo(LeagueType::class);
     }
  
-    public function season() {
-        return $this->belongsTo(Season::class);
-    }
- 
     public function home_team() {
         return $this->belongsTo(Team::class, 'home_team_id');
     }

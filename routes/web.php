@@ -1,6 +1,9 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\QuizAnswerController;
+use App\Http\Controllers\CompanyController;
+use App\Http\Controllers\LeagueController;
 
 /*
 |--------------------------------------------------------------------------
@@ -22,6 +25,12 @@ Route::group(['prefix' => 'dashboard'], function () {
     Route::get('/', function () {
         return view('dashboard');
     })->middleware(['auth'])->name('dashboard');
+
+    Route::get('/picks', [WeeklyQuizAnswerController::class, 'show'])->middleware(['auth'])->name('picks');
+    
+    Route::get('/leagues/create', [LeagueController::class, 'create'])->middleware(['auth'])->name('leagues.create');
+    
+    Route::post('/leagues/store', [LeagueController::class, 'store'])->middleware(['auth'])->name('leagues.store');
 
     // Route::get('users', function ()    {
     //     // Matches The "/dashboard/users" URL
