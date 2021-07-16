@@ -47,6 +47,9 @@ class LeagueController extends Controller
          // create pivot table record
          $league->users()->attach(Auth::user()->id);
 
+         Auth::user()->last_league_id = $league->id;
+         Auth::user()->save();
+
         return redirect('dashboard')->with('success', 'League Created!');
     }
 }

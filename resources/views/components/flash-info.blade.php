@@ -12,13 +12,8 @@
         </div>
         <div class="ml-3">
             <h3 class="text-sm font-medium text-blue-800">
-                Info
+                {{ session('info') }}
             </h3>
-            <div class="mt-2 text-sm text-blue-700">
-                <p>
-                    {{ session('info') }}
-                </p>
-            </div>
         </div>
     </div>
 </div>

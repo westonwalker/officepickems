@@ -12,13 +12,8 @@
         </div>
         <div class="ml-3">
             <h3 class="text-sm font-medium text-red-800">
-                Error
+                {{ session('error') }}
             </h3>
-            <div class="mt-2 text-sm text-red-700">
-                <p>
-                    {{ session('error') }}
-                </p>
-            </div>
         </div>
     </div>
 </div>
